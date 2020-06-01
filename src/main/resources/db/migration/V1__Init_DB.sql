@@ -18,10 +18,9 @@ create table tag
 
 create table post_tag
 (
-    post_tag_id int8 not null,
     tag_id      int8 not null,
     post_id     int8 not null,
-    primary key (tag_id),
+    primary key (tag_id, post_id),
     foreign key (tag_id) references tag (tag_id),
     foreign key (post_id) references post (post_id)
 );

@@ -1,13 +1,14 @@
 package com.kinteg.frogrammer.db.domain;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "tag")
 @Data
+@EqualsAndHashCode
 public class Tag {
 
     @Id
@@ -17,8 +18,5 @@ public class Tag {
 
     @Column(name = "tag_title")
     private String title;
-
-    @OneToMany(mappedBy = "tag")
-    private Set<PostTag> postTags;
 
 }
