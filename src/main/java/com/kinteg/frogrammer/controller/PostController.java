@@ -43,7 +43,7 @@ public class PostController {
 //    }
 
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable Long id) {
+    public ResponseEntity<Post> deleteById(@PathVariable Long id) {
         if (postRepo.existsById(id)) {
             postRepo.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -52,7 +52,7 @@ public class PostController {
         }
     }
 
-    @PostMapping(value = "/update")
+    @PostMapping(value = "/update", produces = "application/json")
     public ResponseEntity<Post> update(@Valid @ModelAttribute Post post) {
         if (post.getId() != null && postRepo.existsById(post.getId())) {
             return new ResponseEntity<>(postRepo.save(post), HttpStatus.OK);
@@ -61,8 +61,8 @@ public class PostController {
         }
     }
 
-    @PostMapping(value = "/create")
-    public ResponseEntity<Post> create(@Valid @ModelAttribute Post post) {
+    @PostMapping(value = "/create", consumes = "application/json")
+    public ResponseEntity<Post> create(@RequestBody Post post) {
         return new ResponseEntity<>(postRepo.save(post), HttpStatus.OK);
     }
 

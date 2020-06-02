@@ -8,6 +8,7 @@ plugins {
 group = 'com.kinteg'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
+sourceCompatibility = '11'
 
 configurations {
 	compileOnly {
@@ -39,6 +40,7 @@ dependencies {
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.projectlombok:lombok'
 	compile group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.12'
+
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
