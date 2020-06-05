@@ -5,15 +5,20 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
-@Table(name = "tag")
+@Table(name = "role")
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class Tag extends BaseEntity {
+public class Role extends BaseEntity {
 
-    @Column(name = "tag_title")
-    private String title;
+
+    @Column(name = "name")
+    private String name;
+
+    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
+    private List<User> users;
 
 }

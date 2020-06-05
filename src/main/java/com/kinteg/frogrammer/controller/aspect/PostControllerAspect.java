@@ -52,6 +52,11 @@ public class PostControllerAspect {
         log.info(aspectStringHelper.responseToString(joinPoint, post));
     }
 
+    @AfterThrowing(value = "callCreatePost()", throwing = "e")
+    public void afterThrowCallCreatePost(JoinPoint joinPoint, Exception e) {
+        log.info("after throwing " + joinPoint.toString() + ", exception :\n" + e.getMessage());
+    }
+
     @Before("callGetPost()")
     public void beforeCallGetPost(JoinPoint joinPoint) {
         log.info(aspectStringHelper.getBefore(joinPoint));
@@ -60,6 +65,11 @@ public class PostControllerAspect {
     @AfterReturning(value = "callGetPost()", returning = "post")
     public void afterCallGetPost(JoinPoint joinPoint, ResponseEntity<Post> post) {
         log.info(aspectStringHelper.responseToString(joinPoint, post));
+    }
+
+    @AfterThrowing(value = "callGetPost()", throwing = "e")
+    public void afterThrowCallGetPost(JoinPoint joinPoint, Exception e) {
+        log.info("after throwing " + joinPoint.toString() + ", exception :\n" + e.getMessage());
     }
 
     @Before("callGetAll()")
@@ -72,6 +82,11 @@ public class PostControllerAspect {
         log.info(aspectStringHelper.pageResponseToString(joinPoint, posts));
     }
 
+    @AfterThrowing(value = "callGetAll()", throwing = "e")
+    public void afterThrowCallGetAll(JoinPoint joinPoint, Exception e) {
+        log.info("after throwing " + joinPoint.toString() + ", exception :\n" + e.getMessage());
+    }
+
     @Before("callDeleteById()")
     public void beforeCallDeleteById(JoinPoint joinPoint) {
         log.info(aspectStringHelper.getBefore(joinPoint));
@@ -82,6 +97,11 @@ public class PostControllerAspect {
         log.info(aspectStringHelper.responseToString(joinPoint, post));
     }
 
+    @AfterThrowing(value = "callDeleteById()", throwing = "e")
+    public void afterThrowCallDeleteById(JoinPoint joinPoint, Exception e) {
+        log.info("after throwing " + joinPoint.toString() + ", exception :\n" + e.getMessage());
+    }
+
     @Before("callUpdate()")
     public void beforeCallUpdate(JoinPoint joinPoint) {
         log.info(aspectStringHelper.getBefore(joinPoint));
@@ -90,6 +110,11 @@ public class PostControllerAspect {
     @AfterReturning(value = "callUpdate()", returning = "post")
     public void afterCallUpdate(JoinPoint joinPoint, ResponseEntity<Post> post) {
         log.info(aspectStringHelper.responseToString(joinPoint, post));
+    }
+
+    @AfterThrowing(value = "callUpdate()", throwing = "e")
+    public void afterThrowCallUpdate(JoinPoint joinPoint, Exception e) {
+        log.info("after throwing " + joinPoint.toString() + ", exception :\n" + e.getMessage());
     }
 
 }

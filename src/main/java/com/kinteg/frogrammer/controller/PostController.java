@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("api/post")
@@ -24,7 +26,7 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<Post> getPost(@PathVariable long id) {
+    public ResponseEntity<Post> getPost(@NotNull @PathVariable long id) {
         if (postRepo.existsById(id)) {
             return new ResponseEntity<>(postRepo.getById(id), HttpStatus.OK);
         } else {
@@ -43,7 +45,7 @@ public class PostController {
 //    }
 
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<Post> deleteById(@PathVariable Long id) {
+    public ResponseEntity<Post> deleteById(@NotNull @PathVariable Long id) {
         if (postRepo.existsById(id)) {
             postRepo.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -52,9 +54,9 @@ public class PostController {
         }
     }
 
-    @PostMapping(value = "/update", produces = "application/json")
-    public ResponseEntity<Post> update(@Valid @ModelAttribute Post post) {
-        if (post.getId() != null && postRepo.existsById(post.getId())) {
+    @PostMapping(value = "/update", consumes = "application/json")
+    public ResponseEntity<Post> update(@Valid @RequestBody Post post) {
+        if (Objects.nonNull(post.getId()) && postRepo.existsById(post.getId())) {
             return new ResponseEntity<>(postRepo.save(post), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -62,8 +64,13 @@ public class PostController {
     }
 
     @PostMapping(value = "/create", consumes = "application/json")
-    public ResponseEntity<Post> create(@RequestBody Post post) {
-        return new ResponseEntity<>(postRepo.save(post), HttpStatus.OK);
+    public ResponseEntity<Post> create(@Valid @RequestBody Post post) {
+
+        if (!postRepo.existsById(post.getId())) {
+            return new ResponseEntity<>(postRepo.save(post), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
 }

@@ -13,13 +13,9 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode
-public class Post {
-
-    @Id
-    @Column(name = "post_id")
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class Post extends BaseEntity {
 
     @Column(name = "post_title")
     @NotNull
