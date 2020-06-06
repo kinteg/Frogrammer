@@ -12,6 +12,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -20,11 +21,13 @@ public class UserLoginServiceImpl implements UserLoginService {
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepo userRepo;
+    private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserLoginServiceImpl(@Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepo userRepo) {
+    public UserLoginServiceImpl(@Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepo userRepo, BCryptPasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepo = userRepo;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -35,6 +38,8 @@ public class UserLoginServiceImpl implements UserLoginService {
                 .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " not found."));
 
         authenticate(auth);
+        user.setPassword(passwordEncoder.encode(auth.getPassword()));
+        userRepo.save(user);
 
         return new AuthenticationResponseDto(username, createToken(user));
     }
