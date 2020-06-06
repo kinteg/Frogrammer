@@ -1,24 +1,7 @@
 package com.kinteg.frogrammer.db.domain;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
+public enum Role {
 
-import javax.persistence.*;
-import java.util.List;
-
-@Entity
-@Table(name = "role")
-@Data
-@ToString(callSuper = true)
-@EqualsAndHashCode(callSuper = true)
-public class Role extends BaseEntity {
-
-
-    @Column(name = "name")
-    private String name;
-
-    @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
-    private List<User> users;
+    ROLE_ADMIN, ROLE_USER
 
 }

@@ -1,7 +1,7 @@
 package com.kinteg.frogrammer.security.jwt;
 
 import io.jsonwebtoken.*;
-import com.kinteg.frogrammer.db.domain.Role;
+import com.kinteg.frogrammer.db.domain.RoleEntity;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -35,10 +35,10 @@ public class JwtTokenProvider {
         secret = Base64.getEncoder().encodeToString(secret.getBytes());
     }
 
-    public String createToken(String username, List<Role> roles) {
+    public String createToken(String username, List<RoleEntity> roleEntities) {
 
         Claims claims = Jwts.claims().setSubject(username);
-        claims.put("roles", getRoleNames(roles));
+        claims.put("roles", getRoleNames(roleEntities));
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
@@ -78,10 +78,10 @@ public class JwtTokenProvider {
         }
     }
 
-    private List<String> getRoleNames(List<Role> userRoles) {
+    private List<String> getRoleNames(List<RoleEntity> userRoleEntities) {
         List<String> result = new ArrayList<>();
 
-        userRoles.forEach(role -> {
+        userRoleEntities.forEach(role -> {
             result.add(role.getName());
         });
 

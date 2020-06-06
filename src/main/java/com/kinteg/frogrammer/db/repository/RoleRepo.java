@@ -1,10 +1,10 @@
 package com.kinteg.frogrammer.db.repository;
 
-import com.kinteg.frogrammer.db.domain.Role;
+import com.kinteg.frogrammer.db.domain.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface RoleRepo extends JpaRepository<Role, Long> {
+public interface RoleRepo extends JpaRepository<RoleEntity, Long> {
 
-    Role findByName(String name);
+    RoleEntity findByName(String name);
 
 }

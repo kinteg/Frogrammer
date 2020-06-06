@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("api/post")
@@ -26,9 +25,9 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<Post> getPost(@NotNull @PathVariable long id) {
+    public ResponseEntity<Post> getPost(@NotNull @PathVariable Long id) {
         if (postRepo.existsById(id)) {
-            return new ResponseEntity<>(postRepo.getById(id), HttpStatus.OK);
+            return ResponseEntity.ok(postRepo.getById(id));
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -36,13 +35,8 @@ public class PostController {
 
     @GetMapping(value = "/getAll", produces = "application/json")
     public ResponseEntity<Page<Post>> getAll(@PageableDefault(sort = "id") Pageable pageable) {
-        return new ResponseEntity<>(postRepo.findAll(pageable), HttpStatus.OK);
+        return ResponseEntity.ok(postRepo.findAll(pageable));
     }
-
-//    @PostMapping(value = "g", produces = "application/json")
-//    public Page<Post> getAllByTitle(@PageableDefault(sort = "id") Pageable pageable, @RequestParam String title) {
-//        return postRepo.findAllByTitleLike(pageable, title);
-//    }
 
     @DeleteMapping(value = "/delete/{id}")
     public ResponseEntity<Post> deleteById(@NotNull @PathVariable Long id) {
@@ -50,26 +44,25 @@ public class PostController {
             postRepo.deleteById(id);
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 
     @PostMapping(value = "/update", consumes = "application/json")
     public ResponseEntity<Post> update(@Valid @RequestBody Post post) {
-        if (Objects.nonNull(post.getId()) && postRepo.existsById(post.getId())) {
-            return new ResponseEntity<>(postRepo.save(post), HttpStatus.OK);
+        if (postRepo.existsById(post.getId())) {
+            return ResponseEntity.ok(postRepo.save(post));
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 
     @PostMapping(value = "/create", consumes = "application/json")
     public ResponseEntity<Post> create(@Valid @RequestBody Post post) {
-
         if (!postRepo.existsById(post.getId())) {
-            return new ResponseEntity<>(postRepo.save(post), HttpStatus.OK);
+            return ResponseEntity.ok(postRepo.save(post));
         } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
     }
 

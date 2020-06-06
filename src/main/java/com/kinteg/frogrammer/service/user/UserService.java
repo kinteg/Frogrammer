@@ -1,4 +1,4 @@
-package com.kinteg.frogrammer.service;
+package com.kinteg.frogrammer.service.user;
 
 import com.kinteg.frogrammer.db.domain.User;
 import org.springframework.data.domain.Page;
@@ -8,14 +8,12 @@ import org.springframework.stereotype.Service;
 @Service
 public interface UserService {
 
-    User register(User user);
-
     Page<User> getAll(Pageable pageable);
 
     User findByUsername(String username);
 
     User findById(Long id);
 
-    boolean delete(Long id);
+    void delete(Long id);
 
 }

@@ -3,56 +3,45 @@ package com.kinteg.frogrammer.controller;
 import com.kinteg.frogrammer.db.domain.User;
 import com.kinteg.frogrammer.dto.AuthenticationRequestDto;
 import com.kinteg.frogrammer.dto.AuthenticationResponseDto;
-import com.kinteg.frogrammer.security.jwt.JwtTokenProvider;
-import com.kinteg.frogrammer.service.UserService;
-import org.aspectj.weaver.BCException;
-import org.springframework.beans.factory.annotation.Qualifier;
+import com.kinteg.frogrammer.dto.RegisterDto;
+import com.kinteg.frogrammer.service.user.UserLoginService;
+import com.kinteg.frogrammer.service.user.UserRegisterService;
+import com.kinteg.frogrammer.service.user.UserUpdateService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Objects;
+import javax.validation.Valid;
 
 @RestController
 @RequestMapping("api/auth")
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtTokenProvider jwtTokenProvider;
-    private final UserService userService;
+    private final UserLoginService userLoginService;
+    private final UserRegisterService userRegisterService;
+    private final UserUpdateService userUpdateService;
 
-    public AuthController(@Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserService userService) {
-        this.authenticationManager = authenticationManager;
-        this.jwtTokenProvider = jwtTokenProvider;
-        this.userService = userService;
+    public AuthController(UserLoginService userLoginService, UserRegisterService userRegisterService, UserUpdateService userUpdateService) {
+        this.userLoginService = userLoginService;
+        this.userRegisterService = userRegisterService;
+        this.userUpdateService = userUpdateService;
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponseDto> login(@RequestBody AuthenticationRequestDto auth) {
-        try {
-            String username = auth.getUsername();
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, auth.getPassword()));
-            User user = userService.findByUsername(username);
+    public ResponseEntity<AuthenticationResponseDto> login(@Valid @RequestBody AuthenticationRequestDto auth) {
+        return ResponseEntity.ok(userLoginService.login(auth));
+    }
 
-            if (Objects.isNull(user)) {
-                throw new UsernameNotFoundException("User with username " + username + " not found.");
-            }
+    @PostMapping("/register")
+    public ResponseEntity<RegisterDto> register(@Valid @RequestBody User user) {
+        return ResponseEntity.ok(RegisterDto.formUser(userRegisterService.register(user)));
+    }
 
-            String token = jwtTokenProvider.createToken(username, user.getRoles());
-
-            AuthenticationResponseDto responseDto = new AuthenticationResponseDto(username, token);
-
-            return ResponseEntity.ok(responseDto);
-
-        } catch (AuthenticationException ex) {
-            throw new BCException("Invalid username or password.");
-        }
+    @PostMapping("/update")
+    public ResponseEntity<String> update(@Valid @RequestBody User user) {
+        return ResponseEntity.ok(userUpdateService.update(user));
     }
 
 }

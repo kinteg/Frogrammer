@@ -1,6 +1,6 @@
 package com.kinteg.frogrammer.security.jwt;
 
-import com.kinteg.frogrammer.db.domain.Role;
+import com.kinteg.frogrammer.db.domain.RoleEntity;
 import com.kinteg.frogrammer.db.domain.Status;
 import com.kinteg.frogrammer.db.domain.User;
 import lombok.NoArgsConstructor;
@@ -22,14 +22,14 @@ public final class JwtUserFactory {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .password(user.getPassword())
-                .authorities(mapToGrantedAuthority(user.getRoles()))
+                .authorities(mapToGrantedAuthority(user.getRole()))
                 .enabled(user.getStatus().equals(Status.ACTIVE))
                 .lastPasswordResetDate(user.getUpdated())
                 .build();
     }
 
-    private static List<GrantedAuthority> mapToGrantedAuthority(List<Role> userRoles) {
-        return userRoles.stream()
+    private static List<GrantedAuthority> mapToGrantedAuthority(List<RoleEntity> userRoleEntities) {
+        return userRoleEntities.stream()
                 .map(role -> new SimpleGrantedAuthority(role.getName()))
                 .collect(Collectors.toList());
     }

@@ -6,43 +6,24 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import net.minidev.json.annotate.JsonIgnore;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class RegisterDto {
 
-    private Long id;
     private String username;
     private String firstName;
     private String lastName;
-    private String email;
-    @JsonIgnore
-    private String password;
 
-    public User toUser() {
-        User user = new User();
-
-        user.setId(id);
-        user.setUsername(username);
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
-        user.setEmail(email);
-
-        return user;
-    }
-
-    public static UserDto formUser(User user) {
-        return UserDto
+    public static RegisterDto formUser(User user) {
+        return RegisterDto
                 .builder()
-                .id(user.getId())
                 .username(user.getUsername())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .email(user.getEmail())
                 .build();
     }
 
