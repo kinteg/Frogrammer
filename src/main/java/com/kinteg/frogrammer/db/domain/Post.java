@@ -14,6 +14,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
+@Builder(toBuilder = true)
 @ToString(callSuper = true)
 public class Post extends BaseEntity {
 
@@ -31,6 +32,11 @@ public class Post extends BaseEntity {
     @NotNull
     @Size(min = 10)
     private String preview;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "post_tag",

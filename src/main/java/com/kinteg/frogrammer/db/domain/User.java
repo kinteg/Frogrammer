@@ -1,13 +1,12 @@
 package com.kinteg.frogrammer.db.domain;
 
-import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -40,6 +39,9 @@ public class User extends BaseEntity {
     @NotNull
     private String password;
     transient private String confirmPassword;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Post> posts;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role",

@@ -1,7 +1,9 @@
 package com.kinteg.frogrammer.controller;
 
 import com.kinteg.frogrammer.db.domain.Post;
-import com.kinteg.frogrammer.db.repository.PostRepo;
+import com.kinteg.frogrammer.dto.CreatePostDto;
+import com.kinteg.frogrammer.dto.SimplePostDto;
+import com.kinteg.frogrammer.service.post.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 @RestController
@@ -18,52 +21,37 @@ import javax.validation.constraints.NotNull;
 @Slf4j
 public class PostController {
 
-    private final PostRepo postRepo;
+    private final PostService postService;
 
-    public PostController(PostRepo postRepo) {
-        this.postRepo = postRepo;
+    public PostController(PostService postService) {
+        this.postService = postService;
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<Post> getPost(@NotNull @PathVariable Long id) {
-        if (postRepo.existsById(id)) {
-            return ResponseEntity.ok(postRepo.getById(id));
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+    public ResponseEntity<SimplePostDto> getPost(@NotNull @Min(0) @PathVariable Long id) {
+        return ResponseEntity.ok(postService.getPost(id));
     }
 
     @GetMapping(value = "/getAll", produces = "application/json")
-    public ResponseEntity<Page<Post>> getAll(@PageableDefault(sort = "id") Pageable pageable) {
-        return ResponseEntity.ok(postRepo.findAll(pageable));
+    public ResponseEntity<Page<SimplePostDto>> getAll(@PageableDefault(sort = "id") Pageable pageable) {
+        return ResponseEntity.ok(postService.getAll(pageable));
     }
 
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<Post> deleteById(@NotNull @PathVariable Long id) {
-        if (postRepo.existsById(id)) {
-            postRepo.deleteById(id);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+    public ResponseEntity<String> deleteById(@NotNull @Min(0) @PathVariable Long id) {
+        postService.delete(id);
+        return ResponseEntity.ok("");
     }
 
     @PostMapping(value = "/update", consumes = "application/json")
     public ResponseEntity<Post> update(@Valid @RequestBody Post post) {
-        if (postRepo.existsById(post.getId())) {
-            return ResponseEntity.ok(postRepo.save(post));
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+        //TODO make post update!
+        return null;
     }
 
     @PostMapping(value = "/create", consumes = "application/json")
-    public ResponseEntity<Post> create(@Valid @RequestBody Post post) {
-        if (!postRepo.existsById(post.getId())) {
-            return ResponseEntity.ok(postRepo.save(post));
-        } else {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
+    public ResponseEntity<SimplePostDto> create(@Valid @RequestBody CreatePostDto post) {
+        return new ResponseEntity<>(postService.create(post), HttpStatus.CREATED);
     }
 
 }

@@ -14,7 +14,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 public class RoleEntity extends BaseEntity {
 
-
     @Column(name = "name")
     private String name;
 

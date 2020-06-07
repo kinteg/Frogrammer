@@ -23,7 +23,12 @@ public class UserLoginServiceImpl implements UserLoginService {
     private final UserRepo userRepo;
     private final BCryptPasswordEncoder passwordEncoder;
 
-    public UserLoginServiceImpl(@Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager, JwtTokenProvider jwtTokenProvider, UserRepo userRepo, BCryptPasswordEncoder passwordEncoder) {
+    public UserLoginServiceImpl(
+            @Qualifier("authenticationManagerBean") AuthenticationManager authenticationManager,
+            JwtTokenProvider jwtTokenProvider,
+            UserRepo userRepo,
+            BCryptPasswordEncoder passwordEncoder
+    ) {
         this.authenticationManager = authenticationManager;
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepo = userRepo;

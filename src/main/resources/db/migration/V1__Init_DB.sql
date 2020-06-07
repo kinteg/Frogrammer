@@ -42,7 +42,9 @@ create table post
     created    timestamp not null,
     updated    timestamp not null,
     status     text      not null,
-    primary key (id)
+    user_id    int8      not null,
+    primary key (id),
+    foreign key (user_id) references usr(id)
 );
 
 create table tag
