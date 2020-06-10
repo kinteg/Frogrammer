@@ -1,5 +1,6 @@
 package com.kinteg.frogrammer.service.user.impl;
 
+import com.kinteg.frogrammer.db.domain.Role;
 import com.kinteg.frogrammer.db.domain.RoleEntity;
 import com.kinteg.frogrammer.db.domain.Status;
 import com.kinteg.frogrammer.db.domain.User;
@@ -45,7 +46,7 @@ public class UserRegisterServiceImpl implements UserRegisterService {
     }
 
     private void makeUserForRegister(User user) {
-        RoleEntity roleUser = roleRepo.findByName("ROLE_USER");
+        RoleEntity roleUser = roleRepo.findByName(Role.ROLE_USER.name());
         List<RoleEntity> userRoleEntities = new ArrayList<>(Collections.singletonList(roleUser));
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));

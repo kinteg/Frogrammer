@@ -28,28 +28,27 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<SimplePostDto> getPost(@NotNull @Min(0) @PathVariable Long id) {
-        return ResponseEntity.ok(postService.getPost(id));
+    public SimplePostDto getPost(@NotNull @Min(1) @PathVariable Long id) {
+        return postService.getPost(id);
     }
 
     @GetMapping(value = "/getAll", produces = "application/json")
-    public ResponseEntity<Page<SimplePostDto>> getAll(@PageableDefault(sort = "id") Pageable pageable) {
-        return ResponseEntity.ok(postService.getAll(pageable));
+    public Page<SimplePostDto> getAll(@PageableDefault(sort = "id") Pageable pageable) {
+        return postService.getAll(pageable);
     }
 
     @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<String> deleteById(@NotNull @Min(0) @PathVariable Long id) {
+    public void deleteById(@NotNull @Min(1) @PathVariable Long id) {
         postService.delete(id);
-        return ResponseEntity.ok("");
     }
 
-    @PostMapping(value = "/update", consumes = "application/json")
-    public ResponseEntity<Post> update(@Valid @RequestBody Post post) {
-        //TODO make post update!
-        return null;
+    @PutMapping(value = "/update", consumes = "application/json")
+    public SimplePostDto update(@Valid @RequestBody CreatePostDto post, @Min(1) Long id) {
+        return postService.update(post, id);
     }
 
     @PostMapping(value = "/create", consumes = "application/json")
+    @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<SimplePostDto> create(@Valid @RequestBody CreatePostDto post) {
         return new ResponseEntity<>(postService.create(post), HttpStatus.CREATED);
     }

@@ -6,22 +6,20 @@ import com.kinteg.frogrammer.db.domain.Tag;
 import com.kinteg.frogrammer.db.domain.User;
 import com.kinteg.frogrammer.db.repository.PostRepo;
 import com.kinteg.frogrammer.db.repository.TagRepo;
-import com.kinteg.frogrammer.db.repository.UserRepo;
 import com.kinteg.frogrammer.dto.CreatePostDto;
 import com.kinteg.frogrammer.dto.SimplePostDto;
-import com.kinteg.frogrammer.security.jwt.JwtUser;
 import com.kinteg.frogrammer.service.post.PostService;
+import com.kinteg.frogrammer.service.user.UserLoginService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.AuthorizationServiceException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -30,12 +28,12 @@ public class PostServiceImpl implements PostService {
 
     private final PostRepo postRepo;
     private final TagRepo tagRepo;
-    private final UserRepo userRepo;
+    private final UserLoginService userLoginService;
 
-    public PostServiceImpl(PostRepo postRepo, TagRepo tagRepo, UserRepo userRepo) {
+    public PostServiceImpl(PostRepo postRepo, TagRepo tagRepo, UserLoginService userLoginService) {
         this.postRepo = postRepo;
         this.tagRepo = tagRepo;
-        this.userRepo = userRepo;
+        this.userLoginService = userLoginService;
     }
 
     @Override
@@ -52,17 +50,13 @@ public class PostServiceImpl implements PostService {
         List<SimplePostDto> content = posts.getContent()
                 .stream().map(SimplePostDto::toSimplePost).collect(Collectors.toList());
 
-        Page<SimplePostDto> postDtoPage = new PageImpl<>(content, posts.getPageable(), content.size());
-
-        return postDtoPage;
+        return new PageImpl<>(content, posts.getPageable(), content.size());
     }
 
     @Override
     public SimplePostDto create(CreatePostDto createPostDto) {
         Set<Tag> tags = new HashSet<>(tagRepo.findAllById(createPostDto.getTags()));
-
-        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        User user = userRepo.findById(jwtUser.getId()).orElseThrow(() -> new AuthorizationServiceException(""));
+        User user = userLoginService.getAuthUser();
         Post post = createPostDto.toPost(tags);
 
         post.setStatus(Status.ACTIVE);
@@ -74,13 +68,36 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public SimplePostDto update(CreatePostDto createPostDto, Long id) {
+        return postRepo.findById(id)
+                .map(post -> {
+                    User user = userLoginService.getAuthUser();
+
+                    if (!Objects.equals(user.getId(), id)) {
+                        throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+                    }
+
+                    post.setTitle(createPostDto.getTitle());
+                    post.setTitle(createPostDto.getTitle());
+                    post.setTitle(createPostDto.getTitle());
+                    post.setTitle(createPostDto.getTitle());
+
+                    postRepo.save(post);
+
+                    return SimplePostDto.toSimplePost(post);
+                })
+                .orElseGet(() -> create(createPostDto));
+    }
+
+    @Override
     public void delete(Long id) {
-        Post post = postRepo.findById(id)
+        postRepo.findById(id)
+                .map(post -> {
+                    post.setStatus(Status.DELETED);
+
+                    return postRepo.save(post);
+                })
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-
-        post.setStatus(Status.DELETED);
-
-        postRepo.save(post);
     }
 
 }

@@ -5,12 +5,15 @@ import com.kinteg.frogrammer.db.repository.UserRepo;
 import com.kinteg.frogrammer.dto.AuthenticationRequestDto;
 import com.kinteg.frogrammer.dto.AuthenticationResponseDto;
 import com.kinteg.frogrammer.security.jwt.JwtTokenProvider;
+import com.kinteg.frogrammer.security.jwt.JwtUser;
 import com.kinteg.frogrammer.service.user.UserLoginService;
 import org.aspectj.weaver.BCException;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.access.AuthorizationServiceException;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,6 +36,13 @@ public class UserLoginServiceImpl implements UserLoginService {
         this.jwtTokenProvider = jwtTokenProvider;
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    @Override
+    public User getAuthUser() {
+        JwtUser jwtUser = (JwtUser) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        return userRepo.findById(jwtUser.getId()).orElseThrow(() -> new AuthorizationServiceException(""));
     }
 
     @Override
@@ -61,5 +71,6 @@ public class UserLoginServiceImpl implements UserLoginService {
     private String createToken(User user) {
         return jwtTokenProvider.createToken(user.getUsername(), user.getRole());
     }
+
 
 }
