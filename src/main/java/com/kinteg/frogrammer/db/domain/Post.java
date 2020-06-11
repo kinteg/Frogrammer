@@ -3,6 +3,7 @@ package com.kinteg.frogrammer.db.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.util.HashSet;
@@ -19,18 +20,18 @@ import java.util.Set;
 public class Post extends BaseEntity {
 
     @Column(name = "post_title")
-    @NotNull
-    @Size(min = 10)
+    @NotNull(message = "Require title isn't null.")
+    @NotEmpty(message = "Pleas provide a title.")
     private String title;
 
     @Column(name = "main_text")
-    @NotNull
-    @Size(min = 10)
+    @NotNull(message = "Require mainText isn't null.")
+    @NotEmpty(message = "Pleas provide a mainText.")
     private String mainText;
 
     @Column(name = "preview")
-    @NotNull
-    @Size(min = 10)
+    @NotNull(message = "Require preview isn't null.")
+    @NotEmpty(message = "Pleas provide a preview.")
     private String preview;
 
     @NotNull

@@ -16,7 +16,7 @@ public class AspectStringHelperImpl<T> implements AspectStringHelper<T> {
     @Override
     public String getBefore(JoinPoint joinPoint) {
         String args = Arrays.stream(joinPoint.getArgs())
-                .map(v -> Objects.requireNonNull(v).getClass() + " = " + Objects.toString(v, "null"))
+                .map(v -> (Objects.nonNull(v) ? v.getClass() : "null") + " = " + Objects.toString(v, "null"))
                 .collect(Collectors.joining(",\n        "));
 
         return "before " + joinPoint.toString() + ",\n  args = [\n       " + args + "\n   ]";

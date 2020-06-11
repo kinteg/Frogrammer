@@ -46,11 +46,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public Page<SimplePostDto> getAll(Pageable pageable) {
-        Page<Post> posts = postRepo.findAll(pageable);
-        List<SimplePostDto> content = posts.getContent()
-                .stream().map(SimplePostDto::toSimplePost).collect(Collectors.toList());
-
-        return new PageImpl<>(content, posts.getPageable(), content.size());
+        return postRepo.findAll(pageable).map(SimplePostDto::toSimplePost);
     }
 
     @Override

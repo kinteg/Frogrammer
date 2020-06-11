@@ -1,6 +1,5 @@
 package com.kinteg.frogrammer.controller;
 
-import com.kinteg.frogrammer.db.domain.Post;
 import com.kinteg.frogrammer.dto.CreatePostDto;
 import com.kinteg.frogrammer.dto.SimplePostDto;
 import com.kinteg.frogrammer.service.post.PostService;
@@ -9,7 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -19,6 +18,7 @@ import javax.validation.constraints.NotNull;
 @RestController
 @RequestMapping("api/post")
 @Slf4j
+@Validated
 public class PostController {
 
     private final PostService postService;
@@ -42,15 +42,15 @@ public class PostController {
         postService.delete(id);
     }
 
-    @PutMapping(value = "/update", consumes = "application/json")
-    public SimplePostDto update(@Valid @RequestBody CreatePostDto post, @Min(1) Long id) {
+    @PutMapping(value = "/update/{id}", consumes = "application/json")
+    public SimplePostDto update(@Valid @RequestBody CreatePostDto post, @Min(1) @PathVariable Long id) {
         return postService.update(post, id);
     }
 
     @PostMapping(value = "/create", consumes = "application/json")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<SimplePostDto> create(@Valid @RequestBody CreatePostDto post) {
-        return new ResponseEntity<>(postService.create(post), HttpStatus.CREATED);
+    public SimplePostDto create(@Valid @RequestBody CreatePostDto post) {
+        return postService.create(post);
     }
 
 }

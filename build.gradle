@@ -44,6 +44,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     compile group: 'org.apache.httpcomponents', name: 'httpclient', version: System.properties['httpcomponents.version']
 
+    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.3.3.RELEASE'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
