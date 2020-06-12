@@ -8,8 +8,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
@@ -28,8 +30,12 @@ public class PostController {
     }
 
     @GetMapping(value = "/{id}", produces = "application/json")
-    public SimplePostDto getPost(@NotNull @Min(1) @PathVariable Long id) {
-        return postService.getPost(id);
+    public ResponseEntity<SimplePostDto> getPost(@NotNull @Min(1) @PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(postService.getPost(id));
+        } catch (HttpClientErrorException ex) {
+            return new ResponseEntity<>(ex.getStatusCode());
+        }
     }
 
     @GetMapping(value = "/getAll", produces = "application/json")
@@ -38,13 +44,22 @@ public class PostController {
     }
 
     @DeleteMapping(value = "/delete/{id}")
-    public void deleteById(@NotNull @Min(1) @PathVariable Long id) {
-        postService.delete(id);
+    public ResponseEntity<String> deleteById(@NotNull @Min(1) @PathVariable Long id) {
+        try {
+            postService.delete(id);
+            return ResponseEntity.ok("");
+        } catch (HttpClientErrorException ex) {
+            return new ResponseEntity<>(ex.getStatusCode());
+        }
     }
 
     @PutMapping(value = "/update/{id}", consumes = "application/json")
-    public SimplePostDto update(@Valid @RequestBody CreatePostDto post, @Min(1) @PathVariable Long id) {
-        return postService.update(post, id);
+    public ResponseEntity<SimplePostDto> update(@Valid @RequestBody CreatePostDto post, @Min(1) @PathVariable Long id) {
+        try {
+            return ResponseEntity.ok(postService.update(post, id));
+        } catch (HttpClientErrorException ex) {
+            return new ResponseEntity<>(ex.getStatusCode());
+        }
     }
 
     @PostMapping(value = "/create", consumes = "application/json")

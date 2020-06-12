@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-class PostControllerValidationTest {
+class PostControllerMockValidationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -52,7 +52,7 @@ class PostControllerValidationTest {
     @Test
     void getPostFailedId() throws Exception {
 
-        Long id = -1L;
+        long id = -1L;
 
         mockMvc.perform(get("/api/post/" + id))
                 .andDo(print())
@@ -140,7 +140,7 @@ class PostControllerValidationTest {
     @Test
     void deleteByIdFailedId() throws Exception {
 
-        Long id = -1L;
+        long id = -1L;
 
         mockMvc.perform(delete("/api/post/delete/" + id))
                 .andDo(print())
@@ -164,9 +164,9 @@ class PostControllerValidationTest {
     @Test
     void deleteByIdSuccessful() throws Exception {
 
-        Long id = 1L;
+        long id = 1L;
 
-        mockMvc.perform(delete("/api/post/delete/" + id.intValue()))
+        mockMvc.perform(delete("/api/post/delete/" + (int) id))
                 .andDo(print())
                 .andExpect(status().isOk())
         ;
@@ -193,7 +193,6 @@ class PostControllerValidationTest {
     @WithMockUser
     @Test
     void createFailedId() throws Exception {
-
         mockMvc.perform(post("/api/post/create")
                 .content("{}")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
@@ -235,7 +234,6 @@ class PostControllerValidationTest {
     @WithMockUser
     @Test
     void createSuccessful() throws Exception {
-
         Long id = 1L;
 
         SimpleTagDto simpleTagDto = SimpleTagDto

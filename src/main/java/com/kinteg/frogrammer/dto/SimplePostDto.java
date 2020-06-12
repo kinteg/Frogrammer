@@ -4,6 +4,7 @@ import com.kinteg.frogrammer.db.domain.Post;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -17,6 +18,8 @@ public class SimplePostDto {
     private String preview;
     private String username;
     private Set<SimpleTagDto> tags;
+    private Date created;
+    private Date updated;
 
     public static SimplePostDto toSimplePost(Post post) {
         return SimplePostDto
@@ -31,6 +34,8 @@ public class SimplePostDto {
                         .map(SimpleTagDto::toSimpleTag)
                         .collect(Collectors.toSet())
                 )
+                .created(post.getCreated())
+                .updated(post.getUpdated())
                 .build();
     }
 

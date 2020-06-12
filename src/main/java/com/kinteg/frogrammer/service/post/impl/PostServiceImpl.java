@@ -11,14 +11,12 @@ import com.kinteg.frogrammer.dto.SimplePostDto;
 import com.kinteg.frogrammer.service.post.PostService;
 import com.kinteg.frogrammer.service.user.UserLoginService;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -37,21 +35,58 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public SimplePostDto getPost(Long id) {
+    public SimplePostDto getPost(Long id) throws HttpClientErrorException{
         Post post = postRepo.findById(id)
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        post.setTags(post.getTags()
+                .stream()
+                .filter(tag -> tag.getStatus().equals(Status.ACTIVE))
+                .collect(Collectors.toSet()));
 
         return SimplePostDto.toSimplePost(post);
     }
 
     @Override
     public Page<SimplePostDto> getAll(Pageable pageable) {
-        return postRepo.findAll(pageable).map(SimplePostDto::toSimplePost);
+        return postRepo.findAll(pageable)
+                .map(post -> {
+                    post.setTags(post.getTags()
+                            .stream()
+                            .filter(tag -> tag.getStatus().equals(Status.ACTIVE))
+                            .collect(Collectors.toSet()));
+
+                    return post;
+                })
+                .map(SimplePostDto::toSimplePost);
+    }
+
+    @Override
+    public SimplePostDto update(CreatePostDto createPostDto, Long id) throws HttpClientErrorException {
+        return postRepo.findById(id)
+                .map(post -> {
+                    User user = userLoginService.getAuthUser();
+
+                    if (!Objects.equals(user.getId(), id)) {
+                        throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
+                    }
+
+                    post.setTitle(createPostDto.getTitle());
+                    post.setMainText(createPostDto.getMainText());
+                    post.setPreview(createPostDto.getPreview());
+                    post.setTags(new HashSet<>(tagRepo.findAllById(createPostDto.getTags())));
+
+                    postRepo.save(post);
+
+                    return SimplePostDto.toSimplePost(post);
+                })
+                .orElseGet(() -> create(createPostDto));
     }
 
     @Override
     public SimplePostDto create(CreatePostDto createPostDto) {
         Set<Tag> tags = new HashSet<>(tagRepo.findAllById(createPostDto.getTags()));
+
         User user = userLoginService.getAuthUser();
         Post post = createPostDto.toPost(tags);
 
@@ -64,29 +99,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public SimplePostDto update(CreatePostDto createPostDto, Long id) {
-        return postRepo.findById(id)
-                .map(post -> {
-                    User user = userLoginService.getAuthUser();
-
-                    if (!Objects.equals(user.getId(), id)) {
-                        throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
-                    }
-
-                    post.setTitle(createPostDto.getTitle());
-                    post.setTitle(createPostDto.getTitle());
-                    post.setTitle(createPostDto.getTitle());
-                    post.setTitle(createPostDto.getTitle());
-
-                    postRepo.save(post);
-
-                    return SimplePostDto.toSimplePost(post);
-                })
-                .orElseGet(() -> create(createPostDto));
-    }
-
-    @Override
-    public void delete(Long id) {
+    public void delete(Long id) throws HttpClientErrorException {
         postRepo.findById(id)
                 .map(post -> {
                     post.setStatus(Status.DELETED);
