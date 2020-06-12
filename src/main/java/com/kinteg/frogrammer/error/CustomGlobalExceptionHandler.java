@@ -12,12 +12,11 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.kinteg.frogrammer.error.ErrorBodyCreator.createBody;
 
 @ControllerAdvice
 public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler {
@@ -28,14 +27,13 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
             HttpHeaders headers, HttpStatus status,
             WebRequest request) {
 
-
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.toList());
 
-        Map<String, Object> body = createBody(status, errors);
+        Map<String, Object> body = createBody(status, errors, request);
 
         return new ResponseEntity<>(body, headers, status);
     }
@@ -49,21 +47,9 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
                 .collect(Collectors.toMap((ConstraintViolation::getPropertyPath),
                                 ConstraintViolation::getMessage));
 
-        Map<String, Object> body = createBody(HttpStatus.BAD_REQUEST, errors);
+        Map<String, Object> body = createBody(HttpStatus.BAD_REQUEST, errors, request);
 
         return new ResponseEntity<>(body, new HttpHeaders(), HttpStatus.BAD_REQUEST);
-    }
-
-    private Map<String, Object> createBody(HttpStatus httpStatus, Object errors) {
-        Map<String, Object> body = new LinkedHashMap<>();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy hh-mm-ss");
-        body.put("timestamp", LocalDateTime.now().format(formatter));
-        body.put("status", httpStatus.value());
-
-        body.put("errors", errors);
-
-        return body;
     }
 
 }

@@ -37,7 +37,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public SimplePostDto getPost(Long id) throws HttpClientErrorException{
         Post post = postRepo.findById(id)
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Failed post id."));
 
         post.setTags(post.getTags()
                 .stream()
@@ -68,7 +68,7 @@ public class PostServiceImpl implements PostService {
                     User user = userLoginService.getAuthUser();
 
                     if (!Objects.equals(user.getId(), id)) {
-                        throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
+                        throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Invalid user for this resource.");
                     }
 
                     post.setTitle(createPostDto.getTitle());
@@ -106,7 +106,7 @@ public class PostServiceImpl implements PostService {
 
                     return postRepo.save(post);
                 })
-                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Failed post id."));
     }
 
 }

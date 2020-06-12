@@ -7,15 +7,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
+import java.net.URI;
 
 @RestController
 @RequestMapping("api/post")
@@ -29,13 +31,24 @@ public class PostController {
         this.postService = postService;
     }
 
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity<?> options() {
+        return ResponseEntity.ok()
+                .allow(HttpMethod.GET, HttpMethod.POST,
+                        HttpMethod.PUT, HttpMethod.DELETE,
+                        HttpMethod.OPTIONS)
+                .build();
+    }
+
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<SimplePostDto> getPost(@NotNull @Min(1) @PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(postService.getPost(id));
-        } catch (HttpClientErrorException ex) {
-            return new ResponseEntity<>(ex.getStatusCode());
-        }
+    public ResponseEntity<Object> getPost(@NotNull @Min(1) @PathVariable Long id) {
+        return ResponseEntity.ok(postService.getPost(id));
+    }
+
+    @RequestMapping(value = "{id}", method = RequestMethod.HEAD)
+    public ResponseEntity<?> head(@PathVariable Long id) {
+        postService.getPost(id);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping(value = "/getAll", produces = "application/json")
@@ -43,29 +56,31 @@ public class PostController {
         return postService.getAll(pageable);
     }
 
-    @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<String> deleteById(@NotNull @Min(1) @PathVariable Long id) {
-        try {
-            postService.delete(id);
-            return ResponseEntity.ok("");
-        } catch (HttpClientErrorException ex) {
-            return new ResponseEntity<>(ex.getStatusCode());
-        }
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<?> deleteById(@NotNull @Min(1) @PathVariable Long id) {
+        postService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 
     @PutMapping(value = "/update/{id}", consumes = "application/json")
-    public ResponseEntity<SimplePostDto> update(@Valid @RequestBody CreatePostDto post, @Min(1) @PathVariable Long id) {
-        try {
-            return ResponseEntity.ok(postService.update(post, id));
-        } catch (HttpClientErrorException ex) {
-            return new ResponseEntity<>(ex.getStatusCode());
-        }
+    public ResponseEntity<Object> update(
+            @Valid @RequestBody CreatePostDto createPostDto,
+            @Min(1) @PathVariable Long id) {
+
+        SimplePostDto post = postService.update(createPostDto, id);
+        URI uri = MvcUriComponentsBuilder.fromController(getClass()).path("/{id}")
+                .buildAndExpand(post.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(post);
     }
 
     @PostMapping(value = "/create", consumes = "application/json")
-    @ResponseStatus(HttpStatus.CREATED)
-    public SimplePostDto create(@Valid @RequestBody CreatePostDto post) {
-        return postService.create(post);
+    public ResponseEntity<SimplePostDto> create(@Valid @RequestBody CreatePostDto createPostDto) {
+        SimplePostDto post = postService.create(createPostDto);
+        URI uri = MvcUriComponentsBuilder.fromController(getClass()).path("/{id}")
+                .buildAndExpand(post.getId()).toUri();
+
+        return ResponseEntity.created(uri).body(post);
     }
 
 }

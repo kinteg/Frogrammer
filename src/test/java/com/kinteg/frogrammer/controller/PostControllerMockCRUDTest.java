@@ -134,9 +134,9 @@ class PostControllerMockCRUDTest {
         when(mockPostRepo.findById(1L)).thenReturn(Optional.of(post));
         when(mockPostRepo.save(post)).thenReturn(returnPost);
 
-        mockMvc.perform(delete(DEFAULT_URL + "delete/" + 1))
+        mockMvc.perform(delete(DEFAULT_URL + 1))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(mockPostRepo, times(1)).findById(1L);
         verify(mockPostRepo, times(1)).save(post);
@@ -147,7 +147,7 @@ class PostControllerMockCRUDTest {
     void deleteById_NOT_FOUND() throws Exception {
         when(mockPostRepo.findById(1L)).thenReturn(Optional.empty());
 
-        mockMvc.perform(delete(DEFAULT_URL + "delete/" + 1))
+        mockMvc.perform(delete(DEFAULT_URL + 1))
                 .andDo(print())
                 .andExpect(status().isNotFound());
 

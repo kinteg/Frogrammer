@@ -32,6 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 class PostControllerMockValidationTest {
+    
+    private final String DEFAULT_URL = "/api/post/";
 
     @Autowired
     private MockMvc mockMvc;
@@ -54,7 +56,7 @@ class PostControllerMockValidationTest {
 
         long id = -1L;
 
-        mockMvc.perform(get("/api/post/" + id))
+        mockMvc.perform(get(DEFAULT_URL + id))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.timestamp", is(notNullValue())))
@@ -110,7 +112,7 @@ class PostControllerMockValidationTest {
                 .when(mockPostService).getPost(id);
 
 
-        mockMvc.perform(get("/api/post/" + id.intValue()))
+        mockMvc.perform(get(DEFAULT_URL + id.intValue()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(id.intValue())))
@@ -142,7 +144,7 @@ class PostControllerMockValidationTest {
 
         long id = -1L;
 
-        mockMvc.perform(delete("/api/post/delete/" + id))
+        mockMvc.perform(delete(DEFAULT_URL + id))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.timestamp", is(notNullValue())))
@@ -166,9 +168,9 @@ class PostControllerMockValidationTest {
 
         long id = 1L;
 
-        mockMvc.perform(delete("/api/post/delete/" + (int) id))
+        mockMvc.perform(delete(DEFAULT_URL + (int) id))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isNoContent())
         ;
 
         verify(mockPostService, times(1)).delete(any(Long.class));
@@ -193,7 +195,7 @@ class PostControllerMockValidationTest {
     @WithMockUser
     @Test
     void createFailedId() throws Exception {
-        mockMvc.perform(post("/api/post/create")
+        mockMvc.perform(post(DEFAULT_URL + "create")
                 .content("{}")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -265,7 +267,7 @@ class PostControllerMockValidationTest {
         userRequest.put("preview", "This is preview");
         userRequest.put("tags", Collections.singleton(id));
 
-        mockMvc.perform(post("/api/post/create")
+        mockMvc.perform(post(DEFAULT_URL + "create")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(userRequest)))
@@ -305,7 +307,7 @@ class PostControllerMockValidationTest {
     @Test
     void updateFailedBody() throws Exception {
 
-        mockMvc.perform(put("/api/post/update/-1")
+        mockMvc.perform(put(DEFAULT_URL + "update/-1")
                 .content("{}")
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -372,7 +374,7 @@ class PostControllerMockValidationTest {
         userRequest.put("preview", "This is preview");
         userRequest.put("tags", Collections.singleton(id));
 
-        mockMvc.perform(put("/api/post/update/-1")
+        mockMvc.perform(put(DEFAULT_URL + "update/-1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(userRequest)))
@@ -440,7 +442,7 @@ class PostControllerMockValidationTest {
         userRequest.put("preview", "This is preview");
         userRequest.put("tags", Collections.singleton(id));
 
-        mockMvc.perform(put("/api/post/update/" + id)
+        mockMvc.perform(put(DEFAULT_URL + "update/" + id)
                 .contentType(MediaType.APPLICATION_JSON)
                 .accept(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(userRequest)))
