@@ -447,7 +447,7 @@ class PostControllerMockValidationTest {
                 .accept(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(userRequest)))
                 .andDo(print())
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.id", is(id.intValue())))
                 .andExpect(jsonPath("$.title", is("This is title")))
                 .andExpect(jsonPath("$.mainText", is("This is main text")))
