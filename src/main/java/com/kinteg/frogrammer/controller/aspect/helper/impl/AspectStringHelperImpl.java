@@ -12,7 +12,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
-public class AspectStringHelperImpl<T> implements AspectStringHelper<T> {
+public class AspectStringHelperImpl implements AspectStringHelper {
+
     @Override
     public String getBefore(JoinPoint joinPoint) {
         String args = Arrays.stream(joinPoint.getArgs())
@@ -23,11 +24,11 @@ public class AspectStringHelperImpl<T> implements AspectStringHelper<T> {
     }
 
     @Override
-    public String responseToString(JoinPoint joinPoint, ResponseEntity<T> object) {
+    public String responseToString(JoinPoint joinPoint, ResponseEntity<?> object) {
         return "after returning " + joinPoint.toString() + getReturn(object);
     }
 
-    private String getReturn(ResponseEntity<T> object) {
+    private String getReturn(ResponseEntity<?> object) {
         if (object != null) {
             return ",\n  return = {\n" +
                     getSimpleBody(object) +
@@ -38,20 +39,19 @@ public class AspectStringHelperImpl<T> implements AspectStringHelper<T> {
         }
     }
 
-    private String getSimpleBody(ResponseEntity<T> object) {
+    private String getSimpleBody(ResponseEntity<?> object) {
         return "        body = " + Objects.toString(object.getBody(), "") + ",\n";
     }
 
     @Override
-    public String pageResponseToString(JoinPoint joinPoint, ResponseEntity<Page<T>> objects) {
+    public String pageResponseToString(JoinPoint joinPoint, Page<?> objects) {
         return "after returning " + joinPoint.toString() + getReturnPage(objects);
     }
 
-    private String getReturnPage(ResponseEntity<Page<T>> objects) {
+    private String getReturnPage(Page<?> objects) {
         if (objects != null) {
             return ",\n  return = {\n" +
                     getPageBody(objects) +
-                    getStatus(objects.getStatusCode()) +
                     "   }";
         } else {
             return "return is null";
@@ -62,13 +62,13 @@ public class AspectStringHelperImpl<T> implements AspectStringHelper<T> {
         return "        status = " + Objects.toString(status, "") + "\n";
     }
 
-    private String getPageBody(ResponseEntity<Page<T>> object) {
+    private String getPageBody(Page<?> object) {
         return "        body = {\n" +
-                (object.hasBody() ? getPage(Objects.requireNonNull(object.getBody())) : "null") +
+                getPage(Objects.requireNonNull(object)) +
                 "\n        },\n";
     }
 
-    private String getPage(Page<T> page) {
+    private String getPage(Page<?> page) {
         return "           total elements = " + page.getTotalElements() + "\n" +
                 "           total pages = " + page.getTotalPages() + "\n" +
                 "           pageable = " + page.getPageable() + "\n" +

@@ -9,16 +9,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.Objects;
-
 @Aspect
 @Component
 @Slf4j
 public class PostControllerAspect {
 
-    private final AspectStringHelper<Post> aspectStringHelper;
+    private final AspectStringHelper aspectStringHelper;
 
-    public PostControllerAspect(AspectStringHelper<Post> aspectStringHelper) {
+    public PostControllerAspect(AspectStringHelper aspectStringHelper) {
         this.aspectStringHelper = aspectStringHelper;
     }
 
@@ -42,6 +40,10 @@ public class PostControllerAspect {
     public void callUpdate() {
     }
 
+    @Pointcut("execution(* com.kinteg.frogrammer.controller.PostController.head(..))")
+    public void callHead() {
+    }
+
     @Before("callCreatePost()")
     public void beforeCallCreatePost(JoinPoint joinPoint) {
         log.info(aspectStringHelper.getBefore(joinPoint));
@@ -62,10 +64,10 @@ public class PostControllerAspect {
         log.info(aspectStringHelper.getBefore(joinPoint));
     }
 
-    @AfterReturning(value = "callGetPost()", returning = "post")
-    public void afterCallGetPost(JoinPoint joinPoint, ResponseEntity<Post> post) {
-        log.info(aspectStringHelper.responseToString(joinPoint, post));
-    }
+//    @AfterReturning(value = "callGetPost()", returning = "post")
+//    public void afterCallGetPost(JoinPoint joinPoint, ResponseEntity<Post> post) {
+//        log.info(aspectStringHelper.responseToString(joinPoint, post));
+//    }
 
     @AfterThrowing(value = "callGetPost()", throwing = "e")
     public void afterThrowCallGetPost(JoinPoint joinPoint, Exception e) {
@@ -77,10 +79,10 @@ public class PostControllerAspect {
         log.info(aspectStringHelper.getBefore(joinPoint));
     }
 
-    @AfterReturning(value = "callGetAll()", returning = "posts")
-    public void afterCallGetAll(JoinPoint joinPoint, ResponseEntity<Page<Post>> posts) {
-        log.info(aspectStringHelper.pageResponseToString(joinPoint, posts));
-    }
+//    @AfterReturning(value = "callGetAll()", returning = "posts")
+//    public void afterCallGetAll(JoinPoint joinPoint, Page<Post> posts) {
+//        log.info(aspectStringHelper.pageResponseToString(joinPoint, posts));
+//    }
 
     @AfterThrowing(value = "callGetAll()", throwing = "e")
     public void afterThrowCallGetAll(JoinPoint joinPoint, Exception e) {
@@ -93,8 +95,8 @@ public class PostControllerAspect {
     }
 
     @AfterReturning(value = "callDeleteById()", returning = "post")
-    public void afterCallDeleteById(JoinPoint joinPoint, ResponseEntity<Post> post) {
-        log.info(aspectStringHelper.responseToString(joinPoint, post));
+    public void afterCallDeleteById(JoinPoint joinPoint, ResponseEntity<?> post) {
+        log.info(aspectStringHelper.responseToString(joinPoint, null));
     }
 
     @AfterThrowing(value = "callDeleteById()", throwing = "e")
@@ -114,6 +116,21 @@ public class PostControllerAspect {
 
     @AfterThrowing(value = "callUpdate()", throwing = "e")
     public void afterThrowCallUpdate(JoinPoint joinPoint, Exception e) {
+        log.info("after throwing " + joinPoint.toString() + ", exception :\n" + e.getMessage());
+    }
+
+    @Before("callHead()")
+    public void beforeCallHead(JoinPoint joinPoint) {
+        log.info(aspectStringHelper.getBefore(joinPoint));
+    }
+
+    @AfterReturning(value = "callHead()", returning = "post")
+    public void afterCallHead(JoinPoint joinPoint, ResponseEntity<?> post) {
+        log.info(aspectStringHelper.responseToString(joinPoint, post));
+    }
+
+    @AfterThrowing(value = "callHead()", throwing = "e")
+    public void afterThrowCallHead(JoinPoint joinPoint, Exception e) {
         log.info("after throwing " + joinPoint.toString() + ", exception :\n" + e.getMessage());
     }
 

@@ -1,23 +1,32 @@
 package com.kinteg.frogrammer.db.domain;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.Date;
 import java.util.List;
 
 @Entity
 @Table(name = "usr")
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class User extends BaseEntity {
+public class User {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @JsonView(Views.FullPost.class)
+    private Long id;
 
     @Column(name = "username")
     @NotNull
     @Size(min = 6, max = 15)
+    @JsonView(Views.FullPost.class)
     private String username;
 
     @Column(name = "first_name")
@@ -48,5 +57,19 @@ public class User extends BaseEntity {
             joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
             inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
     private List<RoleEntity> role;
+
+    @CreatedDate
+    @Column(name = "created")
+    @JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
+    private Date created;
+
+    @LastModifiedDate
+    @Column(name = "updated")
+    @JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
+    private Date updated;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private Status status;
 
 }

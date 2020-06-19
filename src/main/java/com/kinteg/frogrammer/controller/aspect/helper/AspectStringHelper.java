@@ -6,12 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-public interface AspectStringHelper<T> {
+public interface AspectStringHelper {
 
     String getBefore(JoinPoint joinPoint);
 
-    String responseToString(JoinPoint joinPoint, ResponseEntity<T> object);
+    String responseToString(JoinPoint joinPoint, ResponseEntity<?> object);
 
-    String pageResponseToString(JoinPoint joinPoint, ResponseEntity<Page<T>> object);
+    String pageResponseToString(JoinPoint joinPoint, Page<?> object);
 
 }

@@ -30,19 +30,20 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    compile group: 'org.springframework.boot', name: 'spring-boot-starter-hateoas', version: '2.3.0.RELEASE'
+    implementation 'org.springframework.boot:spring-boot-starter-websocket'
     implementation 'org.springframework.security:spring-security-web'
     implementation 'org.flywaydb:flyway-core'
-    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.9.1'
-    compile group: 'org.springframework.security', name: 'spring-security-config', version: '5.3.3.RELEASE'
-    compile group: 'org.springframework.security', name: 'spring-security-crypto', version: System.properties['spring-security-crypto.version']
-    compile group: 'org.hibernate.validator', name: 'hibernate-validator', version: System.properties['org.hibernate.validator.version']
+    implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+    implementation 'io.jsonwebtoken:jjwt-api:0.11.2'
+    implementation 'org.springframework.security:spring-security-config'
+    implementation 'org.springframework.security:spring-security-crypto'
+    implementation 'org.hibernate.validator:hibernate-validator'
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'org.postgresql:postgresql'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
-    compile group: 'org.apache.httpcomponents', name: 'httpclient', version: System.properties['httpcomponents.version']
+    implementation 'org.apache.httpcomponents:httpclient'
 
     testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.3.3.RELEASE'
     testImplementation('org.springframework.boot:spring-boot-starter-test') {

@@ -1,17 +1,23 @@
 package com.kinteg.frogrammer.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.kinteg.frogrammer.db.domain.Post;
+import com.kinteg.frogrammer.db.domain.Views;
 import com.kinteg.frogrammer.dto.CreatePostDto;
-import com.kinteg.frogrammer.dto.SimplePostDto;
+import com.kinteg.frogrammer.dto.PostPageDto;
 import com.kinteg.frogrammer.service.post.PostService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import javax.validation.Valid;
@@ -40,34 +46,51 @@ public class PostController {
                 .build();
     }
 
+
     @GetMapping(value = "/{id}", produces = "application/json")
-    public ResponseEntity<Object> getPost(@NotNull @Min(1) @PathVariable Long id) {
+    @Cacheable(value = "getPost", key = "#id")
+    @JsonView(Views.FullPost.class)
+    public ResponseEntity<Post> getPost(@NotNull @Min(1) @PathVariable Long id) {
         return ResponseEntity.ok(postService.getPost(id));
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.HEAD)
+    @Cacheable(value = "existPost", key = "#id")
     public ResponseEntity<?> head(@PathVariable Long id) {
         postService.getPost(id);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping(value = "/getAll", produces = "application/json")
-    public Page<SimplePostDto> getAll(@PageableDefault(sort = "id") Pageable pageable) {
+    @Cacheable(value = "getAll", key = "#pageable")
+    @JsonView(Views.FullPost.class)
+    public PostPageDto getAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+                                      Pageable pageable) {
         return postService.getAll(pageable);
     }
 
     @DeleteMapping(value = "/{id}")
+    @CacheEvict(value = {"getAll", "existPost", "getPost"}, key = "#id")
     public ResponseEntity<?> deleteById(@NotNull @Min(1) @PathVariable Long id) {
         postService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     @PutMapping(value = "/update/{id}", consumes = "application/json")
-    public ResponseEntity<Object> update(
+    @Caching(
+            put = {
+                    @CachePut(value = {"existPost", "getPost"}, key = "#id")
+            },
+            evict = {
+                    @CacheEvict(value = "getAll")
+            }
+    )
+    @JsonView(Views.FullPost.class)
+    public ResponseEntity<Post> update(
             @Valid @RequestBody CreatePostDto createPostDto,
             @Min(1) @PathVariable Long id) {
 
-        SimplePostDto post = postService.update(createPostDto, id);
+        Post post = postService.update(createPostDto, id);
         URI uri = MvcUriComponentsBuilder.fromController(getClass()).path("/{id}")
                 .buildAndExpand(post.getId()).toUri();
 
@@ -75,8 +98,14 @@ public class PostController {
     }
 
     @PostMapping(value = "/create", consumes = "application/json")
-    public ResponseEntity<SimplePostDto> create(@Valid @RequestBody CreatePostDto createPostDto) {
-        SimplePostDto post = postService.create(createPostDto);
+    @Caching(
+            evict = {
+                    @CacheEvict(value = "getAll")
+            }
+    )
+    @JsonView(Views.FullPost.class)
+    public ResponseEntity<Post> create(@Valid @RequestBody CreatePostDto createPostDto) {
+        Post post = postService.create(createPostDto);
         URI uri = MvcUriComponentsBuilder.fromController(getClass()).path("/{id}")
                 .buildAndExpand(post.getId()).toUri();
 

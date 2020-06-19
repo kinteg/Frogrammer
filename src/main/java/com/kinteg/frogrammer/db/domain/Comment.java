@@ -1,10 +1,7 @@
 package com.kinteg.frogrammer.db.domain;
 
 import com.fasterxml.jackson.annotation.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
@@ -12,44 +9,38 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 @Entity
-@Table(name = "post")
+@Table(name = "comment")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-@Builder(toBuilder = true)
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
-public class Post {
+public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @JsonView(Views.FullPost.class)
     private Long id;
 
-    @Column(name = "post_title")
-    @NotNull(message = "Require title isn't null.")
-    @NotEmpty(message = "Pleas provide a title.")
+    @Column(name = "text")
+    @NotNull(message = "Require text isn't null.")
+    @NotEmpty(message = "Pleas provide a text.")
     @JsonView(Views.FullPost.class)
-    private String title;
+    private String text;
 
-    @Column(name = "main_text")
-    @NotNull(message = "Require mainText isn't null.")
-    @NotEmpty(message = "Pleas provide a mainText.")
+    @Column(name = "parent_id")
     @JsonView(Views.FullPost.class)
-    private String mainText;
+    private Long dependedId;
 
-    @Column(name = "preview")
-    @NotNull(message = "Require preview isn't null.")
-    @NotEmpty(message = "Pleas provide a preview.")
+    @Column(name = "parent_path")
     @JsonView(Views.FullPost.class)
-    private String preview;
+    private Long dependedPath;
+
+    @Column(name = "has_child")
+    @JsonView(Views.FullPost.class)
+    private Boolean hasChild;
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
@@ -57,12 +48,10 @@ public class Post {
     @JsonView(Views.FullPost.class)
     private User user;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "post_tag",
-            joinColumns = {@JoinColumn(name = "post_id")},
-            inverseJoinColumns = {@JoinColumn(name = "tag_id")})
-    @JsonView(Views.FullPost.class)
-    private Set<Tag> tags = new HashSet<>();
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "post_id")
+    private Post post;
 
     @CreatedDate
     @Column(name = "created")

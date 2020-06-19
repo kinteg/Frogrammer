@@ -3,9 +3,9 @@ create sequence hibernate_sequence start 1 increment 1;
 create table usr
 (
     id         int8      not null,
-    username   text      not null,
+    username   text      not null unique,
     password   text      not null,
-    email      text      not null,
+    email      text      not null unique,
     first_name text      not null,
     last_name  text      not null,
     created    timestamp not null,
@@ -17,10 +17,8 @@ create table usr
 create table role
 (
     id      int8      not null,
-    name    text      not null,
+    name    text      not null unique,
     created timestamp not null,
-    updated timestamp not null,
-    status  text      not null,
     primary key (id)
 );
 
@@ -44,16 +42,15 @@ create table post
     status     text      not null,
     user_id    int8      not null,
     primary key (id),
-    foreign key (user_id) references usr(id)
+    foreign key (user_id) references usr (id)
 );
 
 create table tag
 (
     id        int8      not null,
-    tag_title text      not null,
+    tag_title text      not null unique,
     created   timestamp not null,
     updated   timestamp not null,
-    status    text      not null,
     primary key (id)
 );
 
@@ -63,5 +60,19 @@ create table post_tag
     post_id int8 not null,
     primary key (tag_id, post_id),
     foreign key (tag_id) references tag (id),
+    foreign key (post_id) references post (id)
+);
+
+create table comment
+(
+    id      int8      not null,
+    text    text      not null,
+    created timestamp not null,
+    updated timestamp not null,
+    status  text      not null,
+    user_id int8      not null,
+    post_id int8      not null,
+    primary key (id),
+    foreign key (user_id) references usr (id),
     foreign key (post_id) references post (id)
 );
