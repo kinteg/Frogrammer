@@ -1,9 +1,12 @@
 package com.kinteg.frogrammer.db.domain;
 
 import com.fasterxml.jackson.annotation.*;
+import lombok.Builder;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -17,35 +20,31 @@ import java.util.Date;
         generator = ObjectIdGenerators.PropertyGenerator.class,
         property = "id"
 )
+@EntityListeners(AuditingEntityListener.class)
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.FullPost.class)
     private Long id;
 
     @Column(name = "text")
     @NotNull(message = "Require text isn't null.")
     @NotEmpty(message = "Pleas provide a text.")
-    @JsonView(Views.FullPost.class)
     private String text;
 
     @Column(name = "parent_id")
-    @JsonView(Views.FullPost.class)
+    @ColumnDefault(value = "0")
     private Long dependedId;
 
     @Column(name = "parent_path")
-    @JsonView(Views.FullPost.class)
-    private Long dependedPath;
+    private Long dependedAuthor;
 
     @Column(name = "has_child")
-    @JsonView(Views.FullPost.class)
     private Boolean hasChild;
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
-    @JsonView(Views.FullPost.class)
     private User user;
 
     @NotNull
@@ -56,13 +55,11 @@ public class Comment {
     @CreatedDate
     @Column(name = "created")
     @JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    @JsonView(Views.FullPost.class)
     private Date created;
 
     @LastModifiedDate
     @Column(name = "updated")
     @JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
-    @JsonView(Views.FullPost.class)
     private Date updated;
 
     @Enumerated(EnumType.STRING)

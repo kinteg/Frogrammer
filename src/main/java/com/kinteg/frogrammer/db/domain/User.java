@@ -6,6 +6,8 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.data.rest.core.annotation.Description;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -16,17 +18,16 @@ import java.util.List;
 @Entity
 @Table(name = "usr")
 @Data
+@EntityListeners(AuditingEntityListener.class)
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.FullPost.class)
     private Long id;
 
     @Column(name = "username")
     @NotNull
     @Size(min = 6, max = 15)
-    @JsonView(Views.FullPost.class)
     private String username;
 
     @Column(name = "first_name")

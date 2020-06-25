@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -12,16 +13,18 @@ import java.util.Date;
 @Entity
 @Table(name = "tag")
 @Data
+@EntityListeners(AuditingEntityListener.class)
 public class Tag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.FullPost.class)
     private Long id;
 
     @Column(name = "tag_title")
-    @JsonView(Views.FullPost.class)
     private String title;
+
+    @Column(name = "description")
+    private String description;
 
     @CreatedDate
     @Column(name = "created")

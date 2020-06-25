@@ -1,12 +1,12 @@
 package com.kinteg.frogrammer.service.post.impl;
 
-import com.kinteg.frogrammer.db.domain.*;
+import com.kinteg.frogrammer.db.domain.Post;
+import com.kinteg.frogrammer.db.domain.Status;
+import com.kinteg.frogrammer.db.domain.Tag;
+import com.kinteg.frogrammer.db.domain.User;
 import com.kinteg.frogrammer.db.repository.PostRepo;
 import com.kinteg.frogrammer.db.repository.TagRepo;
-import com.kinteg.frogrammer.dto.CreatePostDto;
-import com.kinteg.frogrammer.dto.EventType;
-import com.kinteg.frogrammer.dto.ObjectType;
-import com.kinteg.frogrammer.dto.PostPageDto;
+import com.kinteg.frogrammer.dto.*;
 import com.kinteg.frogrammer.service.post.PostService;
 import com.kinteg.frogrammer.service.user.UserLoginService;
 import com.kinteg.frogrammer.util.WsSender;
@@ -17,9 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -33,7 +35,7 @@ public class PostServiceImpl implements PostService {
         this.postRepo = postRepo;
         this.tagRepo = tagRepo;
         this.userLoginService = userLoginService;
-        this.wsSender = wsSender.getSender(ObjectType.POST, Views.FullPost.class);
+        this.wsSender = wsSender.getSender(ObjectType.POST, Class.class);
     }
 
     @Override
@@ -43,26 +45,15 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostPageDto getAll(Pageable pageable) {
-        Page<Post> posts = postRepo.findAllByStatus(pageable, Status.ACTIVE.name());
-        return new PostPageDto(
-                posts.getContent(),
-                posts.getPageable().getPageNumber(),
-                posts.getTotalPages(),
-                posts.getTotalElements(),
-                posts.getSize()
-        );
+    public Page<Post> getAll(Pageable pageable) {
+        return postRepo.findAllByStatus(pageable, Status.ACTIVE.name());
     }
 
     @Override
     public Post update(CreatePostDto createPostDto, Long id) throws HttpClientErrorException {
         return postRepo.findById(id)
                 .map(post -> {
-                    User user = userLoginService.getAuthUser();
-
-                    if (!Objects.equals(user.getId(), id)) {
-                        throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Invalid user for this resource.");
-                    }
+                    checkUserPrivileges(id);
 
                     if (!Objects.equals(post.getStatus(), Status.ACTIVE)) {
                         throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Failed post id.");
@@ -84,7 +75,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post create(CreatePostDto createPostDto) {
         Set<Tag> tags = new HashSet<>(tagRepo.findAllById(createPostDto.getTags()));
-
+        tags.add(tagRepo.findById(0L).orElseThrow());
         User user = userLoginService.getAuthUser();
         Post post = createPostDto.toPost(tags);
 
@@ -101,6 +92,8 @@ public class PostServiceImpl implements PostService {
     public void delete(Long id) throws HttpClientErrorException {
         postRepo.findById(id)
                 .map(post -> {
+                    checkUserPrivileges(id);
+
                     if (!Objects.equals(post.getStatus(), Status.ACTIVE)) {
                         throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "Failed post id.");
                     }
@@ -112,6 +105,34 @@ public class PostServiceImpl implements PostService {
                     return post;
                 })
                 .orElseThrow(() -> new HttpClientErrorException(HttpStatus.NOT_FOUND, "Failed post id."));
+    }
+
+    @Override
+    public Page<Post> search(Pageable pageable, SearchPostDto searchPost) {
+        return postRepo.findAllBySearchPostDto(
+                pageable, searchPost.fix(), Status.ACTIVE.name());
+    }
+
+    @Override
+    public Page<Post> searchByTag(Pageable pageable, List<Long> tags) {
+        tags.add(0L);
+        return postRepo.findAllByTags(
+                pageable, tags, Status.ACTIVE.name());
+    }
+
+    @Override
+    public Page<Post> searchByText(Pageable pageable, String searchText) {
+        return postRepo.findAllByText(
+                pageable, Objects.toString(searchText, ""), Status.ACTIVE.name());
+    }
+
+    private void checkUserPrivileges(Long id) {
+        User user = userLoginService.getAuthUser();
+
+        if (!Objects.equals(user.getId(), id)) {
+            throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "Invalid user for this resource.");
+        }
+
     }
 
 }

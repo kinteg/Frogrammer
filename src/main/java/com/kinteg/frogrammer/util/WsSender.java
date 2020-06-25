@@ -3,7 +3,6 @@ package com.kinteg.frogrammer.util;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.kinteg.frogrammer.db.domain.Views;
 import com.kinteg.frogrammer.dto.EventType;
 import com.kinteg.frogrammer.dto.ObjectType;
 import com.kinteg.frogrammer.dto.WsEventDto;

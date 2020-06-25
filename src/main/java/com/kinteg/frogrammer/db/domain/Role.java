@@ -7,7 +7,7 @@ public enum Role {
     ROLE_ADMIN("ADMIN"), ROLE_USER("USER");
 
     @Getter
-    private String shortName;
+    private final String shortName;
 
     Role(String shortName) {
         this.shortName = shortName;

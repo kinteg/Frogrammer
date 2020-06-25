@@ -49,6 +49,7 @@ create table tag
 (
     id        int8      not null,
     tag_title text      not null unique,
+    description text      not null,
     created   timestamp not null,
     updated   timestamp not null,
     primary key (id)
@@ -66,6 +67,9 @@ create table post_tag
 create table comment
 (
     id      int8      not null,
+    depended_id      int8 default 0,
+    depended_path    text,
+    has_child    boolean,
     text    text      not null,
     created timestamp not null,
     updated timestamp not null,
@@ -74,5 +78,6 @@ create table comment
     post_id int8      not null,
     primary key (id),
     foreign key (user_id) references usr (id),
-    foreign key (post_id) references post (id)
+    foreign key (post_id) references post (id),
+    foreign key (depended_id) references comment (id)
 );

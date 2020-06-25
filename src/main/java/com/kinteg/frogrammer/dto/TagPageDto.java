@@ -1,6 +1,7 @@
 package com.kinteg.frogrammer.dto;
 
 import com.kinteg.frogrammer.db.domain.Post;
+import com.kinteg.frogrammer.db.domain.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,24 +13,24 @@ import java.util.stream.Collectors;
 @Data
 @AllArgsConstructor
 @Builder(toBuilder = true)
-public class PostPageDto {
+public class TagPageDto {
 
-    private List<SimplePostDto> posts;
+    private List<SimpleTagDto> posts;
     private int currentPage;
     private int totalPages;
     private long totalElements;
     private int size;
 
-    public static PostPageDto toSimplePost(Page<Post> posts) {
-        return PostPageDto
+    public static TagPageDto toSimpleTag(Page<Tag> tags) {
+        return TagPageDto
                 .builder()
-                .posts(posts.getContent()
-                        .stream().map(SimplePostDto::toSimplePost)
+                .posts(tags.getContent()
+                        .stream().map(SimpleTagDto::toSimpleTag)
                         .collect(Collectors.toList()))
-                .currentPage(posts.getPageable().getPageNumber())
-                .totalPages(posts.getTotalPages())
-                .totalElements(posts.getTotalElements())
-                .size(posts.getSize())
+                .currentPage(tags.getPageable().getPageNumber())
+                .totalPages(tags.getTotalPages())
+                .totalElements(tags.getTotalElements())
+                .size(tags.getSize())
                 .build();
     }
 

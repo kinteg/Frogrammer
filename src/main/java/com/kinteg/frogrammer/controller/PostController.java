@@ -1,10 +1,10 @@
 package com.kinteg.frogrammer.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
 import com.kinteg.frogrammer.db.domain.Post;
-import com.kinteg.frogrammer.db.domain.Views;
 import com.kinteg.frogrammer.dto.CreatePostDto;
 import com.kinteg.frogrammer.dto.PostPageDto;
+import com.kinteg.frogrammer.dto.SearchPostDto;
+import com.kinteg.frogrammer.dto.SimplePostDto;
 import com.kinteg.frogrammer.service.post.PostService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -24,6 +24,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequestMapping("api/post")
@@ -46,27 +47,17 @@ public class PostController {
                 .build();
     }
 
-
     @GetMapping(value = "/{id}", produces = "application/json")
     @Cacheable(value = "getPost", key = "#id")
-    @JsonView(Views.FullPost.class)
-    public ResponseEntity<Post> getPost(@NotNull @Min(1) @PathVariable Long id) {
-        return ResponseEntity.ok(postService.getPost(id));
+    public ResponseEntity<SimplePostDto> getPost(@NotNull @Min(1) @PathVariable Long id) {
+        return ResponseEntity.ok(SimplePostDto.toSimplePost(postService.getPost(id)));
     }
 
     @RequestMapping(value = "{id}", method = RequestMethod.HEAD)
     @Cacheable(value = "existPost", key = "#id")
-    public ResponseEntity<?> head(@PathVariable Long id) {
+    public ResponseEntity<?> existById(@NotNull @Min(1) @PathVariable Long id) {
         postService.getPost(id);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping(value = "/getAll", produces = "application/json")
-    @Cacheable(value = "getAll", key = "#pageable")
-    @JsonView(Views.FullPost.class)
-    public PostPageDto getAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                                      Pageable pageable) {
-        return postService.getAll(pageable);
     }
 
     @DeleteMapping(value = "/{id}")
@@ -76,7 +67,7 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    @PutMapping(value = "/update/{id}", consumes = "application/json")
+    @PutMapping(value = "/{id}", consumes = "application/json")
     @Caching(
             put = {
                     @CachePut(value = {"existPost", "getPost"}, key = "#id")
@@ -85,16 +76,15 @@ public class PostController {
                     @CacheEvict(value = "getAll")
             }
     )
-    @JsonView(Views.FullPost.class)
-    public ResponseEntity<Post> update(
+    public ResponseEntity<SimplePostDto> update(
             @Valid @RequestBody CreatePostDto createPostDto,
-            @Min(1) @PathVariable Long id) {
+            @NotNull @Min(1) @PathVariable Long id) {
 
         Post post = postService.update(createPostDto, id);
         URI uri = MvcUriComponentsBuilder.fromController(getClass()).path("/{id}")
                 .buildAndExpand(post.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(post);
+        return ResponseEntity.created(uri).body(SimplePostDto.toSimplePost(post));
     }
 
     @PostMapping(value = "/create", consumes = "application/json")
@@ -103,13 +93,41 @@ public class PostController {
                     @CacheEvict(value = "getAll")
             }
     )
-    @JsonView(Views.FullPost.class)
-    public ResponseEntity<Post> create(@Valid @RequestBody CreatePostDto createPostDto) {
+    public ResponseEntity<SimplePostDto> create(@Valid @RequestBody CreatePostDto createPostDto) {
         Post post = postService.create(createPostDto);
         URI uri = MvcUriComponentsBuilder.fromController(getClass()).path("/{id}")
                 .buildAndExpand(post.getId()).toUri();
 
-        return ResponseEntity.created(uri).body(post);
+        return ResponseEntity.created(uri).body(SimplePostDto.toSimplePost(post));
+    }
+
+    @GetMapping(value = "/getAll", produces = "application/json")
+    @Cacheable(value = "getAll", key = "#pageable")
+    public ResponseEntity<PostPageDto> getAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+                                                      Pageable pageable) {
+        return ResponseEntity.ok(PostPageDto.toSimplePost(postService.getAll(pageable)));
+    }
+
+    @GetMapping(value = "/search", produces = "application/json")
+    public ResponseEntity<PostPageDto> search(
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+                    Pageable pageable, @RequestBody SearchPostDto searchPost) {
+        return ResponseEntity.ok(PostPageDto.toSimplePost(postService.search(pageable, searchPost)));
+    }
+
+    @GetMapping(value = "/search/{id}", produces = "application/json")
+    public ResponseEntity<PostPageDto> searchByTagId(
+            @PathVariable List<Long> id,
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+                    Pageable pageable) {
+        return ResponseEntity.ok(PostPageDto.toSimplePost(postService.searchByTag(pageable, id)));
+    }
+
+    @GetMapping(value = "/search/simpleSearch", produces = "application/json")
+    public ResponseEntity<PostPageDto> searchByText(
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
+                    Pageable pageable, @RequestParam(required = false) String searchText) {
+        return ResponseEntity.ok(PostPageDto.toSimplePost(postService.searchByText(pageable, searchText)));
     }
 
 }

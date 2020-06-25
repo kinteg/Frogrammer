@@ -18,7 +18,6 @@ public class RoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @JsonView(Views.FullPost.class)
     private Long id;
 
     @Column(name = "name")
