@@ -1,6 +1,5 @@
 package com.kinteg.frogrammer.controller;
 
-import com.fasterxml.jackson.databind.node.TextNode;
 import com.kinteg.frogrammer.dto.SimpleTagDto;
 import com.kinteg.frogrammer.dto.TagPageDto;
 import com.kinteg.frogrammer.service.tag.TagService;
@@ -51,22 +50,22 @@ public class TagController {
 
     @GetMapping(value = "/getAll", produces = "application/json")
     @Cacheable(value = "getAll", key = "#pageable")
-    public ResponseEntity<TagPageDto> getAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                                                      Pageable pageable) {
+    public ResponseEntity<TagPageDto> getAll(
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(TagPageDto.toSimpleTag(tagService.getAll(pageable)));
     }
 
     @GetMapping(value = "/search/searchAllByTitle", produces = "application/json")
     public ResponseEntity<TagPageDto> searchAllByTitle(
-            @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                    Pageable pageable, @RequestParam String title) {
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam String title) {
         return ResponseEntity.ok(TagPageDto.toSimpleTag(tagService.searchAllByTitle(pageable, title)));
     }
 
     @GetMapping(value = "/search", produces = "application/json")
     public ResponseEntity<TagPageDto> searchAllByMatches(
-            @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                    Pageable pageable, @RequestParam(required = false) String searchText) {
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) String searchText) {
         return ResponseEntity.ok(TagPageDto.toSimpleTag(tagService.searchAllByMatches(pageable, searchText)));
     }
 

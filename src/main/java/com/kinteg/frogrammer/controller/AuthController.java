@@ -23,7 +23,9 @@ public class AuthController {
     private final UserRegisterService userRegisterService;
     private final UserUpdateService userUpdateService;
 
-    public AuthController(UserLoginService userLoginService, UserRegisterService userRegisterService, UserUpdateService userUpdateService) {
+    public AuthController(
+            UserLoginService userLoginService, UserRegisterService userRegisterService,
+            UserUpdateService userUpdateService) {
         this.userLoginService = userLoginService;
         this.userRegisterService = userRegisterService;
         this.userUpdateService = userUpdateService;

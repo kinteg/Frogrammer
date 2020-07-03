@@ -103,30 +103,29 @@ public class PostController {
 
     @GetMapping(value = "/getAll", produces = "application/json")
     @Cacheable(value = "getAll", key = "#pageable")
-    public ResponseEntity<PostPageDto> getAll(@PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                                                      Pageable pageable) {
+    public ResponseEntity<PostPageDto> getAll(
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable) {
         return ResponseEntity.ok(PostPageDto.toSimplePost(postService.getAll(pageable)));
     }
 
     @GetMapping(value = "/search", produces = "application/json")
     public ResponseEntity<PostPageDto> search(
-            @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                    Pageable pageable, @RequestBody SearchPostDto searchPost) {
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestBody SearchPostDto searchPost) {
         return ResponseEntity.ok(PostPageDto.toSimplePost(postService.search(pageable, searchPost)));
     }
 
     @GetMapping(value = "/search/{id}", produces = "application/json")
     public ResponseEntity<PostPageDto> searchByTagId(
-            @PathVariable List<Long> id,
-            @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                    Pageable pageable) {
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @PathVariable List<Long> id) {
         return ResponseEntity.ok(PostPageDto.toSimplePost(postService.searchByTag(pageable, id)));
     }
 
     @GetMapping(value = "/search/simpleSearch", produces = "application/json")
     public ResponseEntity<PostPageDto> searchByText(
-            @PageableDefault(sort = "id", direction = Sort.Direction.DESC)
-                    Pageable pageable, @RequestParam(required = false) String searchText) {
+            @PageableDefault(sort = "id", direction = Sort.Direction.DESC) Pageable pageable,
+            @RequestParam(required = false) String searchText) {
         return ResponseEntity.ok(PostPageDto.toSimplePost(postService.searchByText(pageable, searchText)));
     }
 

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/api/admin/")
+@RequestMapping("api/admin")
 public class AdminController {
 
     private final UserService userService;
@@ -32,4 +32,5 @@ public class AdminController {
 
         return new ResponseEntity<>(UserDto.formUser(result), HttpStatus.OK);
     }
+
 }

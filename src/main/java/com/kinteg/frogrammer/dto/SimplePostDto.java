@@ -26,10 +26,7 @@ public class SimplePostDto {
                 .title(post.getTitle())
                 .mainText(post.getMainText())
                 .preview(post.getPreview())
-                .user(new SimpleUserDto(
-                                post.getUser().getId(),
-                                post.getUser().getUsername())
-                        )
+                .user(SimpleUserDto.toSimpleUser(post.getUser()))
                 .tags(post.getTags()
                         .stream()
                         .map(SimpleTagDto::toSimpleTag)
