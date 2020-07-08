@@ -70,6 +70,18 @@ public class Post {
     @JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
     private Date updated;
 
+    @Column(name = "published")
+    @JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
+    private Date published;
+
+    @Column(name = "not_activation_date")
+    @JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
+    private Date notActivationDate;
+
+    @Column(name = "deleted_date")
+    @JsonFormat(pattern = "dd-MM-yyyy hh:mm:ss")
+    private Date deletedDate;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private Status status;

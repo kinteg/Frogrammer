@@ -1,7 +1,7 @@
 package com.kinteg.frogrammer.controller;
 
 import com.kinteg.frogrammer.db.domain.User;
-import com.kinteg.frogrammer.dto.UserDto;
+import com.kinteg.frogrammer.dto.user.UserDto;
 import com.kinteg.frogrammer.service.user.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

@@ -1,11 +1,10 @@
 package com.kinteg.frogrammer.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kinteg.frogrammer.db.domain.*;
 import com.kinteg.frogrammer.db.repository.PostRepo;
 import com.kinteg.frogrammer.db.repository.TagRepo;
-import com.kinteg.frogrammer.dto.CreatePostDto;
+import com.kinteg.frogrammer.dto.post.CreatePostDto;
 import com.kinteg.frogrammer.service.user.UserLoginService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

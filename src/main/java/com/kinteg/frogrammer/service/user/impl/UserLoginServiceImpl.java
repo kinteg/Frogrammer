@@ -2,8 +2,8 @@ package com.kinteg.frogrammer.service.user.impl;
 
 import com.kinteg.frogrammer.db.domain.User;
 import com.kinteg.frogrammer.db.repository.UserRepo;
-import com.kinteg.frogrammer.dto.AuthenticationRequestDto;
-import com.kinteg.frogrammer.dto.AuthenticationResponseDto;
+import com.kinteg.frogrammer.dto.auth.AuthenticationRequestDto;
+import com.kinteg.frogrammer.dto.auth.AuthenticationResponseDto;
 import com.kinteg.frogrammer.security.jwt.JwtTokenProvider;
 import com.kinteg.frogrammer.security.jwt.JwtUser;
 import com.kinteg.frogrammer.service.user.UserLoginService;

@@ -1,6 +1,8 @@
-package com.kinteg.frogrammer.dto;
+package com.kinteg.frogrammer.dto.post;
 
 import com.kinteg.frogrammer.db.domain.Post;
+import com.kinteg.frogrammer.dto.tag.SimpleTagDto;
+import com.kinteg.frogrammer.dto.user.SimpleUserDto;
 import lombok.Builder;
 import lombok.Data;
 

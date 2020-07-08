@@ -1,8 +1,8 @@
 package com.kinteg.frogrammer.service.user;
 
 import com.kinteg.frogrammer.db.domain.User;
-import com.kinteg.frogrammer.dto.AuthenticationRequestDto;
-import com.kinteg.frogrammer.dto.AuthenticationResponseDto;
+import com.kinteg.frogrammer.dto.auth.AuthenticationRequestDto;
+import com.kinteg.frogrammer.dto.auth.AuthenticationResponseDto;
 import org.springframework.stereotype.Component;
 
 @Component

@@ -20,27 +20,27 @@ public class PostControllerAspect {
         this.aspectStringHelper = aspectStringHelper;
     }
 
-    @Pointcut("execution(* com.kinteg.frogrammer.controller.PostController.create(..))")
+    @Pointcut("execution(* com.kinteg.frogrammer.controller.post.PostController.create(..))")
     public void callCreatePost() {
     }
 
-    @Pointcut("execution(* com.kinteg.frogrammer.controller.PostController.getPost(..))")
+    @Pointcut("execution(* com.kinteg.frogrammer.controller.post.PostController.getPost(..))")
     public void callGetPost() {
     }
 
-    @Pointcut("execution(* com.kinteg.frogrammer.controller.PostController.getAll(..))")
+    @Pointcut("execution(* com.kinteg.frogrammer.controller.post.PostController.getAll(..))")
     public void callGetAll() {
     }
 
-    @Pointcut("execution(* com.kinteg.frogrammer.controller.PostController.deleteById(..))")
+    @Pointcut("execution(* com.kinteg.frogrammer.controller.post.PostController.deleteById(..))")
     public void callDeleteById() {
     }
 
-    @Pointcut("execution(* com.kinteg.frogrammer.controller.PostController.update(..))")
+    @Pointcut("execution(* com.kinteg.frogrammer.controller.post.PostController.update(..))")
     public void callUpdate() {
     }
 
-    @Pointcut("execution(* com.kinteg.frogrammer.controller.PostController.head(..))")
+    @Pointcut("execution(* com.kinteg.frogrammer.controller.post.PostController.head(..))")
     public void callHead() {
     }
 

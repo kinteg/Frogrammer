@@ -1,19 +1,18 @@
 package com.kinteg.frogrammer.db.repository;
 
 import com.kinteg.frogrammer.db.domain.Post;
-import com.kinteg.frogrammer.db.domain.Tag;
-import com.kinteg.frogrammer.dto.SearchPostDto;
+import com.kinteg.frogrammer.dto.post.SearchPostDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
+@Repository
 public interface PostRepo extends JpaRepository<Post, Long> {
 
     @Query(value = "select * from post p" +
@@ -48,6 +47,5 @@ public interface PostRepo extends JpaRepository<Post, Long> {
             " and p.preview ilike ('%' || text(:#{#searchPostDto.preview}) || '%'))" +
             "", nativeQuery = true)
     Page<Post> findAllBySearchPostDto(Pageable pageable, @Param("searchPostDto") SearchPostDto searchPostDto, String status);
-
 
 }

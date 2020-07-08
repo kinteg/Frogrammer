@@ -1,9 +1,9 @@
 package com.kinteg.frogrammer.controller;
 
 import com.kinteg.frogrammer.db.domain.User;
-import com.kinteg.frogrammer.dto.AuthenticationRequestDto;
-import com.kinteg.frogrammer.dto.AuthenticationResponseDto;
-import com.kinteg.frogrammer.dto.RegisterDto;
+import com.kinteg.frogrammer.dto.auth.AuthenticationRequestDto;
+import com.kinteg.frogrammer.dto.auth.AuthenticationResponseDto;
+import com.kinteg.frogrammer.dto.auth.RegisterDto;
 import com.kinteg.frogrammer.service.user.UserLoginService;
 import com.kinteg.frogrammer.service.user.UserRegisterService;
 import com.kinteg.frogrammer.service.user.UserUpdateService;

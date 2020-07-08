@@ -1,22 +1,26 @@
-package com.kinteg.frogrammer.dto;
+package com.kinteg.frogrammer.dto.auth;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kinteg.frogrammer.db.domain.User;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Builder(toBuilder = true)
-public class SimpleUserDto {
+@AllArgsConstructor
+@NoArgsConstructor
+public class RegisterDto {
 
-    private Long id;
     private String username;
     private String firstName;
     private String lastName;
 
-    public static SimpleUserDto toSimpleUser(User user) {
-        return SimpleUserDto
+    public static RegisterDto formUser(User user) {
+        return RegisterDto
                 .builder()
-                .id(user.getId())
                 .username(user.getUsername())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())

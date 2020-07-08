@@ -1,9 +1,10 @@
-package com.kinteg.frogrammer.controller;
+package com.kinteg.frogrammer.controller.tag;
 
-import com.kinteg.frogrammer.dto.SimpleTagDto;
-import com.kinteg.frogrammer.dto.TagPageDto;
+import com.kinteg.frogrammer.dto.tag.SimpleTagDto;
+import com.kinteg.frogrammer.dto.tag.TagPageDto;
 import com.kinteg.frogrammer.service.tag.TagService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -22,7 +23,7 @@ public class TagController {
 
     private final TagService tagService;
 
-    public TagController(TagService tagService) {
+    public TagController(@Qualifier("tagServiceImpl") TagService tagService) {
         this.tagService = tagService;
     }
 

@@ -1,4 +1,4 @@
-package com.kinteg.frogrammer.dto;
+package com.kinteg.frogrammer.dto.auth;
 
 import lombok.Data;
 

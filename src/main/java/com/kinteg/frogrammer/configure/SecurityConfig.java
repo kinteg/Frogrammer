@@ -15,7 +15,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private static final String ADMIN_ENDPOINT = "/api/admin/**";
-    private static final String POST_ENDPOINT = "/api/post/**";
+    private static final String MODERATOR_ENDPOINT = "/api/moderator/**";
+    private static final String USER_ENDPOINT = "/api/user/**";
 
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -38,9 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(ADMIN_ENDPOINT).hasRole(Role.ROLE_ADMIN.getShortName())
-                .antMatchers(HttpMethod.POST, POST_ENDPOINT).authenticated()
-                .antMatchers(HttpMethod.DELETE, POST_ENDPOINT).authenticated()
-                .antMatchers(HttpMethod.PUT, POST_ENDPOINT).authenticated()
+                .antMatchers(MODERATOR_ENDPOINT).hasRole(Role.ROLE_MODERATOR.getShortName())
+                .antMatchers(USER_ENDPOINT).hasRole(Role.ROLE_USER.getShortName())
                 .anyRequest().permitAll()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));
